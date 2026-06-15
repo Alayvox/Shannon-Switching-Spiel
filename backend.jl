@@ -109,9 +109,21 @@ function make_move!(state::GameState, e::Edge)::Nothing
     state.winner = check_winner(state)
     return nothing 
 end
-
+using Random
 function  random_graph(n::Int, m::Int; weighted=false)::GameGraph
+    v = []
+    e = []
+    for i in range(1,n)
+        push!(v,Vertex(i))
+    end 
+    for k in range(1,m)
+        push!(e,Edge(k,v[k],v[k+1],0,:neutral))
+    end 
     
+    return GameGraph(v , e , v[1],v[n])
+    
+
+
 
 
 end 

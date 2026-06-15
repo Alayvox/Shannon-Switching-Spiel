@@ -51,11 +51,11 @@ function check_winner(state::GameState)::Union{Symbol, Nothing}
             
         end 
         for i in state.graph.edges 
-            if i.u == l && i.state == :short && i.v !in visited  
+            if i.u == l && i.state == :short && !(i.v in visited )
                 push!(Q,i.v)
                 push!(visited,i.v)
             end 
-            if i.v == l && i.state == :short && i.u !in visited  
+            if i.v == l && i.state == :short && !(i.u in visited)
                 push!(Q,i.u)
                 push!(visited,i.u)
             end 
@@ -75,11 +75,11 @@ function check_winner(state::GameState)::Union{Symbol, Nothing}
             break
         end 
         for i in state.graph.edges 
-            if i.u == l && i.state !== :cut && i.v !in visited  
+            if i.u == l && i.state !== :cut && !(i.v in visited )
                 push!(Q,i.v)
                 push!(visited,i.v)
             end 
-            if i.v == l && i.state !== :cut && i.u !in visited  
+            if i.v == l && i.state !== :cut && !(i.u in visited)  
                 push!(Q,i.u)
                 push!(visited,i.u)
             end 

@@ -1,4 +1,4 @@
-struct Vertex
+mutable struct Vertex
     id::Int
 end
 mutable struct Edge
@@ -8,7 +8,7 @@ mutable struct Edge
     weight::Float64
     state::Symbol # :neutral, :short, :cut
 end
-struct GameGraph
+mutable struct GameGraph
     vertices::Vector{Vertex}
     edges::Vector{Edge}
     s::Vertex
@@ -25,9 +25,7 @@ function new_game(g::GameGraph)::GameState
     for i in g.edges 
         i.state = :neutral
     end 
-    return GameState(graph = g ,current_player = :short ,
-    history=Vector{Tuple{Symbol, Edge}}(),
-    winner = nothing  )
+    return GameState(graph = g ,current_player = :short ,history=Vector{Tuple{Symbol, Edge}}(),winner = nothing  )
 end 
 
 function valid_moves(state::GameState)::Vector{Edge}
@@ -40,11 +38,11 @@ function valid_moves(state::GameState)::Vector{Edge}
     return v 
 end 
 function check_winner(state::GameState)::Union{Symbol, Nothing}
-    #Gewinn Bedingung Short 
+    
     s = state.graph.s 
     Q =[s]
     
-    visited =[]
+    visited =[s]
     while !isempty(Q)
         l =popfirst!(Q)
         if l === state.graph.t 
@@ -53,16 +51,17 @@ function check_winner(state::GameState)::Union{Symbol, Nothing}
             
         end 
         for i in state.graph.edges 
-            if i.u == l && i.state=== :short && i.v !in visited  
+            if i.u == l && i.state == :short && i.v !in visited  
                 push!(Q,i.v)
                 push!(visited,i.v)
-            elseif i.v == l && i.state=== :short && i.u !in visited  
+            end 
+            if i.v == l && i.state == :short && i.u !in visited  
                 push!(Q,i.u)
                 push!(visited,i.u)
             end 
         end 
     end
-    #Gewinn Bedingung Cut
+    
     s = state.graph.s 
     Q =[s]
     
@@ -79,7 +78,8 @@ function check_winner(state::GameState)::Union{Symbol, Nothing}
             if i.u == l && i.state !== :cut && i.v !in visited  
                 push!(Q,i.v)
                 push!(visited,i.v)
-            elseif i.v == l && i.state !== :cut && i.u !in visited  
+            end 
+            if i.v == l && i.state !== :cut && i.u !in visited  
                 push!(Q,i.u)
                 push!(visited,i.u)
             end 
@@ -109,23 +109,26 @@ function make_move!(state::GameState, e::Edge)::Nothing
     state.winner = check_winner(state)
     return nothing 
 end
-using Random
+
 function  random_graph(n::Int, m::Int; weighted=false)::GameGraph
     v = []
     e = []
-    for i in range(1,n)
+    for i in 1:n
         push!(v,Vertex(i))
     end 
-    for k in range(1,m)
-        push!(e,Edge(k,v[k],v[k+1],0,:neutral))
+    while m!=0
+        r = shuffle(v)
+        f = pop!(r)
+        o = pop!(r)
+        if weighted === false 
+            push!(e,Edge(m,f,o,1,:neutral))
+        else 
+            push!(e,Edge(m,f,o,rand(1:10),:neutral))
+
+        end 
+        m=m-1
     end 
-    
-    return GameGraph(v , e , v[1],v[n])
-    
-
-
-
-
+    return GameGraph(v,e,v[1],v[end])
 end 
 
 

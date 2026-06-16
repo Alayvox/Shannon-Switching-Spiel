@@ -111,30 +111,57 @@ function make_move!(state::GameState, e::Edge)::Nothing
 end
 
 function  random_graph(n::Int, m::Int; weighted=false)::GameGraph
-    v = []
-    e = []
-    for i in 1:n
-        push!(v,Vertex(i))
-    end 
-    while m!=0
-        r = shuffle(v)
-        f = pop!(r)
-        o = pop!(r)
-        if weighted === false 
-            push!(e,Edge(m,f,o,1,:neutral))
-        else 
-            push!(e,Edge(m,f,o,rand(1:10),:neutral))
-
+    if m < n-1 
+        return error("Diese Graph ist nicht zusammenhanged ")
+    else 
+        ve = []
+        e = []
+        for i in 1:n
+            push!(ve,Vertex(i))
         end 
-        m=m-1
+         k = ve
+        for s in 1:n-1
+            if s == 1 
+                k = shuffle(k)
+                a = pop!(k)
+                b = pop!(k)
+                if weighted === false 
+                    push!(e,Edge(s,a,b,1,:neutral))
+                else 
+                    push!(e,Edge(s,a,b,rand(1:10),:neutral))
+                end
+            else 
+                a = e[s-1].v
+                k= shuffle(k)
+                b = pop!(k)
+                if weighted === false 
+                    push!(e,Edge(s,a,b,1,:neutral))
+                else 
+                    push!(e,Edge(s,a,b,rand(1:10),:neutral))
+                end
+            end 
+        end 
+        if m >n-1
+            
+            for s in n:m
+                
+                c = shuffle(e)
+                c_1 = pop!(c)
+                c_2 = pop!(c)
+                if weighted === false 
+                    push!(e,Edge(s,c_1.u,c_2.v,1,:neutral))
+                else 
+                    push!(e,Edge(s,c_1.u,c_2.v,rand(1:10),:neutral))
+                end
+            
+            
+            end 
+            
+        end 
+
+
+
+        
     end 
-    return GameGraph(v,e,v[1],v[end])
+    return GameGraph(ve,e,ve[1],ve[end])
 end 
-
-
-
-
-
-
-
-
